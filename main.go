@@ -68,7 +68,7 @@ type UsernameCustom struct {
 	isAdmin bool //admins have true/ all others have false
 	// email        string
 	subscription bool
-	isRider      bool //rider now has the option of dequeue priority queues
+	isDispatch   bool //rider now has the option of dequeue priority queues
 }
 
 type KVorder struct {
@@ -81,7 +81,7 @@ type KVorder struct {
 type OpeningPeriods map[string][]string
 
 // var UsernameList = []string{"1", "admin", "estella", "alvin", "customer", "customer1", "estella45", "admin6"} //username prepopulated but can grow accordingly to the business's requirements
-var UsernameList2 = []UsernameCustom{{"1", true, false, false}, {"admin", true, false, false}, {"estella", false, false, false}, {"alvin", false, false, false}, {"customer", false, false, false}, {"customer1", false, false, false}, {"estella45", false, false, false}, {"admin6", true, true, true}, {"rider", false, true, true}, {"supervisor", false, true, true}, {"pris", true, true, true}}
+var UsernameList2 = []UsernameCustom{{"1", true, false, false}, {"admin", true, true, true}, {"estella", false, false, false}, {"alvin", false, false, false}, {"customer", false, false, false}, {"customer1", false, false, false}, {"estella45", false, false, false}, {"dispatch", false, true, true}, {"rider", false, true, true}, {"supervisor", false, true, true}, {"pris", true, true, true}}
 
 func main() {
 
@@ -176,9 +176,16 @@ func main() {
 				break
 
 			case 5:
-				fmt.Println("Order Successfully dispatched. Please check current order queue again to check latest queues.")
-				SysQueue.Dequeue()
-				break
+				checkUserDispatchResult := checkUserDispatch(usrnameInpt)
+
+				if checkUserDispatchResult {
+					fmt.Println("\nOrder Successfully dispatched. Please check current order queue again to check latest queues.")
+					SysQueue.Dequeue()
+					break
+				} else {
+					fmt.Println("\nAccess Denied. User Does Not Have Rider or Dispatch Rights")
+					break
+				}
 
 			case 6:
 				fmt.Println("Display and Export Databases")

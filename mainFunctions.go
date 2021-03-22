@@ -226,8 +226,10 @@ func SearchSaveCheckOut(un string, s string, d float64, f float64, s2 string, s3
 			fmt.Print("System Error:", errorSearchandATC)
 		} else {
 			case2SearchResults := MyFoodListDB.GetSuggestion(case2rseultstring, case2rseultint)
-			PrintKeywordSearchResults(case2SearchResults, un)
-			AddToCart(case2SearchResults, un)
+			// PrintKeywordSearchResults(case2SearchResults, un)
+			// AddToCart(case2SearchResults, un)
+			editedSearch := PrintKeywordSearchResults(case2SearchResults, un)
+			AddToCart(editedSearch, un)
 		}
 		break
 
@@ -277,7 +279,7 @@ func CheckoutConfirm(s string) { //s in this case is your username
 	if checkUserAdminResult {                 //this allows an admin user to push a queue to priority
 		fmt.Printf("\nHi user: %s,! You are authorised as a customer service officer!\n\n", s)
 		fmt.Println("Please enter priority number more than 0 if an order is an order is meant for service recovery")
-		fmt.Println("Enter 0 for default if is not for service recovery")
+		fmt.Println("Enter 0 for default if is not for service recovery\n")
 		fmt.Scanln(&usrInpt)
 		PriorityIndex = usrInpt
 	}
@@ -292,6 +294,17 @@ func checkUserAdmin(s string) bool {
 	for _, v := range UsernameList2 {
 		if v.UserName == s {
 			if v.isAdmin == true {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func checkUserDispatch(s string) bool {
+	for _, v := range UsernameList2 {
+		if v.UserName == s {
+			if v.isDispatch == true {
 				return true
 			}
 		}
