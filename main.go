@@ -80,9 +80,6 @@ type KVorder struct {
 
 type OpeningPeriods map[string][]string
 
-// var UsernameList = []string{"1", "admin", "estella", "alvin", "customer", "customer1", "estella45", "admin6"} //username prepopulated but can grow accordingly to the business's requirements
-var UsernameList2 = []UsernameCustom{{"1", true, false, false}, {"admin", true, true, true}, {"estella", false, false, false}, {"alvin", false, false, false}, {"customer", false, false, false}, {"customer1", false, false, false}, {"estella45", false, false, false}, {"dispatch", false, true, true}, {"rider", false, true, true}, {"supervisor", false, true, true}, {"pris", true, true, true}}
-
 func main() {
 
 	ch := make(chan string) //create a channel called c
@@ -90,7 +87,6 @@ func main() {
 	var count int = 0
 	var postalCodeInpt int
 	currentTime := time.Now()
-
 	usernameDS := InitUsernameTrie() //inits Trie data for username DS
 	go CreateFoodList(ch)            //newResult is a slice that is being returned byCreateFoodList function
 	fmt.Println("\nSystem Message :", <-ch)
@@ -128,7 +124,7 @@ func main() {
 	for { //display main meu and loop until you die.
 		switchRS, err := displayMainMenu()
 		if err != nil {
-			fmt.Println("System Error:", err)
+			fmt.Println("\nSystem Error:", err)
 		} else {
 			switch switchRS {
 			case 1:
@@ -195,8 +191,8 @@ func main() {
 			case 7:
 				os.Exit(1)
 
-			default:
-				break
+				// default:
+				// 	break
 			}
 		} // end switch else statement for error handling
 	}

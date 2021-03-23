@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -49,7 +50,8 @@ func checkUsernameStructure(s string) bool {
 
 func displayMainMenu() (int, error) {
 
-	var usrInpt int
+	// var usrInpt int
+	var usrInpt string
 	fmt.Println("\nPlease select from the following menu\n")
 	fmt.Println("1. Access Food Items")
 	fmt.Println("2. Search and Add Items to Cart")
@@ -59,11 +61,17 @@ func displayMainMenu() (int, error) {
 	fmt.Println("6. Display Databases")
 	fmt.Println("7. End Program")
 	fmt.Scanln(&usrInpt)
+	// fmt.Println("value", usrInpt)
+	// if usrInpt <= 0 || usrInpt > 7 {
+	// 	return -1, errors.New("Input cannot be negative or more than the number of options provided")
+	// }
+	matched, _ := regexp.MatchString(`^[0-7]`, usrInpt)
 
-	if usrInpt <= 0 || usrInpt > 7 {
+	if !matched {
 		return -1, errors.New("Input cannot be negative or more than the number of options provided")
 	}
-	return usrInpt, nil
+	newusrInt, _ := strconv.Atoi(usrInpt)
+	return newusrInt, nil
 }
 
 func concatenateFoodList() { //return you a slice of strings

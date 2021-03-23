@@ -128,3 +128,5 @@ var MyShoppingCart = []ShoppingCartOrder{}
 var FirstQueueValue = []KVorder{KVorder{transID: []string{"MC12345KV", "MC2345KV"}, username: "testadmin", systemQueueID: "OS120KV"}}
 var SecondQueueValue = []KVorder{KVorder{transID: []string{"MC3456KV", "MC7890KV"}, username: "testadmin", systemQueueID: "OS1201KV"}}
 var ThirdQueueValue = []KVorder{KVorder{transID: []string{"MC8912KV", "MC9123KV"}, username: "testadmin", systemQueueID: "OS123KV"}}
+
+var UsernameList2 = []UsernameCustom{{"1", true, false, false}, {"admin", true, true, true}, {"estella", false, false, false}, {"alvin", false, false, false}, {"customer", false, false, false}, {"customer1", false, false, false}, {"estella45", false, false, false}, {"dispatch", false, true, true}, {"rider", false, true, true}, {"supervisor", false, true, true}, {"pris", true, true, true}}
