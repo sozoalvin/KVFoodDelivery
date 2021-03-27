@@ -7,7 +7,7 @@ import (
 
 type QNode struct {
 	priority int
-	item     []KVorder
+	item     KVorder
 	next     *QNode
 }
 
@@ -22,7 +22,7 @@ func InitSysQueue() *Queue {
 	return result
 }
 
-func (p *Queue) Enqueue(k []KVorder, prty int) error {
+func (p *Queue) Enqueue(k KVorder, prty int) error {
 	newNode := &QNode{
 		priority: prty,
 		item:     k,
@@ -57,7 +57,7 @@ func (p *Queue) PrepreEnqueue(ch chan string) {
 
 }
 
-func (p *Queue) PreEnqueue(k []KVorder, prty int) error {
+func (p *Queue) PreEnqueue(k KVorder, prty int) error {
 	newNode := &QNode{
 		priority: prty,
 		item:     k,
@@ -105,29 +105,30 @@ func (p *Queue) PrintAllNodes() error {
 	}
 
 	fmt.Printf("\nAuthorized Priority Queue Number: %d tagged to queue.\n\n", currentNode.priority)
+	fmt.Printf("Order System Queue ID:\t\t\t\t%s\n\n", currentNode.item.systemQueueID)
 
-	for _, v := range currentNode.item {
+	// for _, v := range currentNode.item {
 
-		for i, v := range v.transID {
-			fmt.Printf("Associated Merchant Transaction id %d:\t\t%s\n", i+1, v)
-		}
-		fmt.Printf("Order System Queue ID:\t\t\t\t%s\n", v.systemQueueID)
-		fmt.Printf("Order tagged to username:\t\t\t%s\n", v.username)
+	for i, v := range currentNode.item.transID {
+		fmt.Printf("%d.Associated Merchant Transaction id:\t\t%s\n", i+1, v)
 	}
+	fmt.Printf("\nOrder tagged to username:\t\t\t%s\n", currentNode.item.username)
+	// }
 
 	fmt.Println("\n==========================================================")
 
 	for currentNode.next != nil {
 		currentNode = currentNode.next
 		fmt.Printf("\nAuthorized Priority Queue Number: %d tagged to queue.\n\n", currentNode.priority)
-		for _, v := range currentNode.item {
+		fmt.Printf("Order System Queue ID:\t\t\t\t%s\n\n", currentNode.item.systemQueueID)
 
-			for i, v := range v.transID {
-				fmt.Printf("%d.Associated Merchant Transaction id: \t\t%s\n", i+1, v)
-			}
-			fmt.Printf("Order System Queue ID:\t\t\t\t%s\n", v.systemQueueID)
-			fmt.Printf("Order tagged to username:\t\t\t%s\n", v.username)
+		//for _, v := range currentNode.item {
+
+		for i, v := range currentNode.item.transID {
+			fmt.Printf("%d.Associated Merchant Transaction id:\t\t%s\n", i+1, v)
 		}
+		fmt.Printf("\nOrder tagged to username:\t\t\t%s\n", currentNode.item.username)
+		//}
 
 		fmt.Println("\n==========================================================")
 
@@ -135,3 +136,8 @@ func (p *Queue) PrintAllNodes() error {
 	return nil
 
 }
+
+// func (p *Queue) OnlyFirst(){
+// 	currentNode :=  p.front
+// 	x := currentNode.item
+// }

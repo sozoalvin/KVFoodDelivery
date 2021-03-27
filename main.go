@@ -21,6 +21,13 @@ type CustomerData struct { //every customer data must be populated this way.
 	TotalSpend float64 //their total spend with the kay cafe
 }
 
+type driverInfo struct {
+	Fname         string
+	Lname         string
+	ContactNumber string
+	Email         string
+}
+
 type FoodInfo struct { //struct type because we need to hold values
 
 	FoodName         string
@@ -75,7 +82,19 @@ type KVorder struct {
 	transID       []string
 	username      string
 	systemQueueID string
-	// priority      int
+	priorityIndex int
+}
+
+type OrderStatuses struct {
+	MerchantsStatus bool //check if all transactionsIDS from ALL merchants are completed. If yes, then send true
+	OrderPickedUp   bool //once picked up by driver/ rider/ status becomes true
+	DriverDelivered bool //once driver/ rider has delivered, this status becomes true
+	CusDeliveryCfm  bool //once customer confirms delivery OR when a preset timeout expires from DriverDelivered = true, this status becomes true.
+}
+type SystemOrderInfo struct {
+	KVorder
+	DriverName string
+	OrderStatuses
 }
 
 type OpeningPeriods map[string][]string
@@ -88,7 +107,8 @@ func main() {
 	var postalCodeInpt int
 	currentTime := time.Now()
 	usernameDS := InitUsernameTrie() //inits Trie data for username DS
-	go CreateFoodList(ch)            //newResult is a slice that is being returned byCreateFoodList function
+	go AppendFakeQueueData()
+	go CreateFoodList(ch) //newResult is a slice that is being returned byCreateFoodList function
 	fmt.Println("\nSystem Message :", <-ch)
 	go CreateFoodListMap(ch)
 	fmt.Println("System Message :", <-ch)
@@ -167,21 +187,21 @@ func main() {
 				}
 				break
 			case 4:
-				fmt.Println("Here are the current orders in queue")
+				fmt.Println("\nHere are the Current Orders In Queue")
 				SysQueue.PrintAllNodes()
 				break
 
 			case 5:
 				checkUserDispatchResult := checkUserDispatch(usrnameInpt)
 
-				if checkUserDispatchResult {
-					fmt.Println("\nOrder Successfully dispatched. Please check current order queue again to check latest queues.")
-					SysQueue.Dequeue()
-					break
+				if checkUserDispatchResult { //if loop runs if logged in user has rider/driver/dispatch rights
+					displayDispatchMenu()
+
 				} else {
 					fmt.Println("\nAccess Denied. User Does Not Have Rider or Dispatch Rights")
 					break
 				}
+				break
 
 			case 6:
 				fmt.Println("Display and Export Databases")
@@ -189,10 +209,11 @@ func main() {
 				break
 
 			case 7:
-				os.Exit(1)
+				editSystemOrderInforamtion()
+				break
 
-				// default:
-				// 	break
+			case 8:
+				os.Exit(1)
 			}
 		} // end switch else statement for error handling
 	}

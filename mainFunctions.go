@@ -59,13 +59,14 @@ func displayMainMenu() (int, error) {
 	fmt.Println("4. Check on Current Order Queue")
 	fmt.Println("5. Dispatch Order")
 	fmt.Println("6. Display Databases")
-	fmt.Println("7. End Program")
+	fmt.Println("7. Edit and Delete System Order Information")
+	fmt.Println("8. End Program")
 	fmt.Scanln(&usrInpt)
 	// fmt.Println("value", usrInpt)
 	// if usrInpt <= 0 || usrInpt > 7 {
 	// 	return -1, errors.New("Input cannot be negative or more than the number of options provided")
 	// }
-	matched, _ := regexp.MatchString(`^[0-7]`, usrInpt)
+	matched, _ := regexp.MatchString(`^[0-8]`, usrInpt) //please change back to 7 , after you are done. menu option number 8 only enabled for testing purposes
 
 	if !matched {
 		return -1, errors.New("Input cannot be negative or more than the number of options provided")
@@ -89,14 +90,14 @@ func CreateFoodList(ch chan string) {
 	// return FoodMerchantNameAddress
 }
 
-func CreateFoodList1() []string { //function for template testing.
+// func CreateFoodList1() []string { //function for template testing.
 
-	for _, v := range V_2 {
-		FoodMerchantNameAddress1 = append(FoodMerchantNameAddress1, v.FoodName+" - "+v.MerchantName+" - "+v.DetailedLocation)
-	}
-	sort.Strings(FoodMerchantNameAddress1)
-	return FoodMerchantNameAddress1
-}
+// 	for _, v := range V_2 {
+// 		FoodMerchantNameAddress1 = append(FoodMerchantNameAddress1, v.FoodName+" - "+v.MerchantName+" - "+v.DetailedLocation)
+// 	}
+// 	sort.Strings(FoodMerchantNameAddress1)
+// 	return FoodMerchantNameAddress1
+// }
 
 func PrintSliceinLines(s []string) {
 	sum := 0
@@ -208,7 +209,7 @@ func MatchUsrInptToSlice(s []string, s1 string, s2 string, un string) {
 	fmt.Printf("\nThe Total Cost for this is: $%0.2f\n", s2n*MyFoodListMap[s[s1nn]].Price)
 	fmt.Println("\nPlease select save shopping cart if you want to checkout the above items. ")
 
-	fmt.Println("\n===================================================")
+	fmt.Println("\n===================================================\n")
 
 	fmt.Println("Please choose from the following options\n")
 	SearchSaveCheckOut(un, s[s1nn], s2n, s2n*MyFoodListMap[s[s1nn]].Price, MyFoodListMap[s[s1nn]].MerchantName, MyFoodListMap[s[s1nn]].FoodName) //passes username, the complete food dish, the total quantity, the price, the merchant name, the food name
@@ -291,9 +292,14 @@ func CheckoutConfirm(s string) { //s in this case is your username
 		fmt.Scanln(&usrInpt)
 		PriorityIndex = usrInpt
 	}
-	KVorderforQueue = append(KVorderforQueue, KVorder{totalTransPerSession, s, systemQueueID})
-	SysQueue.Enqueue(KVorderforQueue, PriorityIndex)
-	fmt.Println("\nOrder successfully processed. What would you like to do next?\n")
+	// KVorderforQueue = append(KVorderforQueue, KVorder{totalTransPerSession, s, systemQueueID, PriorityIndex})
+	KVorderforQueue := KVorder{totalTransPerSession, s, systemQueueID, PriorityIndex}
+	SysQueue.Enqueue(KVorderforQueue, PriorityIndex) // can we change KVorderforQueue STRUCT to take in priority index also?
+	//store system queue number queue and other  information into map
+	SystemQueueDB[systemQueueID] = &SystemOrderInfo{KVorder{totalTransPerSession, s, systemQueueID, PriorityIndex}, "", OrderStatuses{false, false, false, false}} //have to put in empty string for driver information
+	// SystemQueueDB["OS123KV"] = SystemOrderInfo{KVorder{[]string{"MC8912KV", "MC9123KV"}, "testadmin", "OS123KV", 7}, "driver1"}
+
+	fmt.Println("\nNext Order in Queue successfully processed and dispatched. What would you like to do next?\n")
 	ClearShoppingCartAndCheckoutinformation()
 	return
 }
@@ -381,7 +387,7 @@ func PrintKeywordSearchResults(ss []string, s string) []string { //new func for 
 	var found bool
 	var Recoverycase2SearchResults []string
 	if len(ss) != 0 {
-		fmt.Println("\nHere are the search results:\n")
+		fmt.Println("\nHere Are the Search Results:\n")
 
 		PrintSliceinLinesGeneral(ss)
 		return ss
@@ -416,7 +422,7 @@ func PrintKeywordSearchResults(ss []string, s string) []string { //new func for 
 
 func ClearShoppingCartAndCheckoutinformation() {
 	MyShoppingCart = []ShoppingCartOrder{} //clears shopping cart
-	KVorderforQueue = []KVorder{}
+	KVorderforQueue = []KVorder{}          //
 	// return
 }
 
@@ -426,13 +432,14 @@ func DisplayAllDatabase() {
 	i := 1
 	j := 1
 
-	fmt.Println("Select to see all data of merchants using transaction ID")
+	fmt.Println("\nPlease Select from the following options")
 	fmt.Println("\n========================================================")
 
 	fmt.Println("1. View all Data regarding Transaction ID(s)")
 	fmt.Println("2. Export all Data regarding Transaction ID(s)")
 	fmt.Println("3. View all Data related to usernames")
 	fmt.Println("4. Export all Data related to usernames")
+	fmt.Println("5. Export all Data related to the queue")
 	fmt.Scanln(&usinpt)
 	fmt.Println("\n========================================================\n")
 
@@ -454,14 +461,6 @@ func DisplayAllDatabase() {
 			fmt.Println("\n============================================================")
 			i++
 		}
-
-	// type Checkout struct {
-	// 	FoodName     string
-	// 	MerchantName string
-	// 	Quantity     float64
-	// 	Price        float64
-	// 	OrderID      string
-	// 	Username     string
 	case 2:
 		fmt.Println("Exporting of Data regarding Transaction ID(s) has been started. You can find the file name transactionIDsData.json in the root folder. What else would you like to do next?\n")
 		ExportMyCheckoutTranID()
@@ -485,8 +484,33 @@ func DisplayAllDatabase() {
 		fmt.Println("Exporting of Data regarding usernames has been started. You can find the file name You can find the file name usernameData.json in the root folder. What else would you like to do next?\n")
 		ExportMyCheckoutIDUsername()
 
-	}
+	case 5:
 
+		fmt.Println("Show All Past Queue Data")
+		// AppendFakeQueueData()
+		// fmt.Println(SystemQueueDB)
+		fmt.Println("\n============================================================")
+
+		for l, _ := range SystemQueueDB {
+			count := 1
+			fmt.Printf("\nSystem Queue ID:\t%s\n", l)
+			fmt.Printf("\n\nOrder ID(s) Associated with the order: \t\t\t\n")
+			fmt.Println("\n============================================================\n")
+			for k, v := range SystemQueueDB[l].transID {
+				fmt.Printf("%d. \t%s\n", k+1, v) //prints index number and number of transID
+			}
+			fmt.Println("\n============================================================")
+			fmt.Printf("\nSystem Queue tagged to username:\t%s\n", SystemQueueDB[l].username)
+			fmt.Printf("System Queue with priority index:\t%d\n", SystemQueueDB[l].priorityIndex)
+			if SystemQueueDB[l].DriverName == "" {
+				fmt.Println("**There is no driver assigned for this order. Please assign!")
+			} else {
+				fmt.Printf("System Queue tagged to driver:\t\t%s\n", SystemQueueDB[l].DriverName)
+			}
+			fmt.Println("\n============================================================")
+			count++
+		}
+	}
 }
 
 func ExportMyCheckoutTranID() {
@@ -500,7 +524,110 @@ func ExportMyCheckoutTranID() {
 func ExportMyCheckoutIDUsername() {
 
 	file, _ := json.MarshalIndent(MyCheckoutIDUsername, "", " ")
-
 	_ = ioutil.WriteFile("usernameData.json", file, 0644)
+
+}
+
+func AppendFakeQueueData() {
+	SystemQueueDB["OS120KV"] = &SystemOrderInfo{FirstQueueValue, "", OrderStatuses{false, false, false, false}}
+	SystemQueueDB["OS1201KV"] = &SystemOrderInfo{SecondQueueValue, "driver2", OrderStatuses{false, false, false, false}}
+	SystemQueueDB["OS123KV"] = &SystemOrderInfo{ThirdQueueValue, "driver1", OrderStatuses{false, false, false, false}}
+}
+
+func checkValidDriver(s string) bool {
+
+	if _, ok := DriverDB[s]; ok {
+		return true
+	}
+	return false
+}
+
+func displayDispatchMenu() {
+
+	var driverInput string
+	fmt.Println("Please Enter Delivery Partner Detail's username")
+	fmt.Scanln(&driverInput)
+	if checkValidDriver(driverInput) {
+		fmt.Printf("\nOrder Number %s (The Next Order in Line) Successfully dispatched. Please check current order queue again to check latest queues.\n", SysQueue.front.item.systemQueueID)
+		s := SysQueue.front.item.systemQueueID
+		fmt.Printf("\nThe Order is tagged to: %s\n", driverInput)
+		PushDriverDatatoMap(s, driverInput)
+		SysQueue.Dequeue()
+
+	} else {
+		fmt.Println("\nDelivery Partner Username Invalid. Please try again later")
+	}
+	// break
+}
+
+func PushDriverDatatoMap(sqid string, dn string) { // system queue ID/ driver name
+	SystemQueueDB[sqid].DriverName = dn
+}
+
+func editSystemOrderInforamtion() {
+
+	var sqid string
+	var orderToDelete string
+	var tempSearchResults []string
+	var ai int = -1
+	var newSlice []string
+	fmt.Println("Please enter System Queue Number")
+	fmt.Scanln(&sqid)
+	sc := strings.ToUpper(sqid) //converts whatever stirng value to UPPER case to match whatever that is stored in SystemQueueDB
+
+	if _, ok := SystemQueueDB[sc]; ok {
+		fmt.Println("\nPlease See All Data Available for this System Queue Number:\n")
+		for k, v := range SystemQueueDB[sc].transID {
+			fmt.Printf("%d. Transaction ID:\t%s\n", k+1, v)
+			tempSearchResults = append(tempSearchResults, v) //this will give us a short liste of transaction to work with. Saving on memory consumption
+			// fmt.Println("see below new slice data")
+
+		}
+		// fmt.Println(tempSearchResults)
+
+		fmt.Println("\nPlease Enter Transaction ID to Cancel. Once cancelled, order number will be deleted form System Queue Map Database.")
+		fmt.Scanln(&orderToDelete)
+		// fmt.Printf("\n%T%[1]v\n", orderToDelete)
+		//check if order to delete is available in temp search results
+		for k, v := range tempSearchResults {
+			// fmt.Println(v)
+			// fmt.Println(strings.ToUpper(orderToDelete))
+
+			if strings.ToUpper(orderToDelete) == v {
+				ai = k // assigns affected index = k
+				break  // break once value found
+			}
+		} //end of range loop. Continue procees since keyed in value is a valid order numer
+
+		if ai == -1 {
+			fmt.Println("Transaction ID not found in this System Queue Number. Please ensure you are searching in the correct System Queue ID")
+			return
+		}
+
+		x := len(tempSearchResults) //gives us total len
+
+		if ai == 0 {
+			newSlice = tempSearchResults[1:] // deletes first order number
+
+		} else if ai == x+1 { //last element
+			newSlice = tempSearchResults[:x] // deletes the last order number
+
+		} else {
+			newSlice = tempSearchResults[:ai] //will capture first array all the way until affected array -1 . if data is 2, 3, 4, 5, and affected order is 5, this slice captures up till data 4 only. EXCLUDING 5
+			newSlice2 := tempSearchResults[ai+1:]
+			for _, v := range newSlice2 {
+				newSlice = append(newSlice, v) //this will give me a new slice to work with
+			}
+		}
+
+		SystemQueueDB[sc].transID = newSlice
+		fmt.Printf("\nOrder: %s has been deleted\n", orderToDelete)
+		fmt.Printf("\nOrder Numbers in System Queue Number: %s Sucesfully Updated\n", sc)
+		// fmt.Println(SystemQueueDB[sc].transID)
+
+		return
+	} else {
+		fmt.Println("\nThe System Queue Number you've entered is invalid. Please ensure you've typed input the correct information")
+	}
 
 }
