@@ -1,4 +1,4 @@
-# KVFoodDelivery
+# KVFoodDelivery - CLI Application
 Backend Prototyping System for Food Delivery Applications. Written in go/ golang with search, auto complete, suggestive search as well postal code lookups
 
 <h2>Introduction</h2>
@@ -6,7 +6,7 @@ Backend Prototyping System for Food Delivery Applications. Written in go/ golang
 <p>The KV app was created in an attempt to solve teething customer service issues that have been affecting customer’s average order values, customer satisfaction and ultimate customer loyalty.
 While there were alternatives that were created before; there is no single application that can integrate the features that are now available.</p>
 
-<img src = "https://i.ibb.co/P4n3bSz/1.png">
+<img src = "https://i.ibb.co/P4n3bSz/1.png" width="700">
 
 <h2>1. Login Screen for Authorized Usage</h2>
 <img src = "https://i.imgur.com/SekvVyo.png">
